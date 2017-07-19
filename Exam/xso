@@ -1,0 +1,38 @@
+#
+# Use scala to run a compiled Scala/CSO program
+#
+# Usage: xso [scala parameters]
+#
+# Default path where cso (and other) .jar file(s) are found is          ./PUBLISH
+# Default path into which class files are placed is                     ./BUILD
+# These can be overridden by setting the environment variables  JARPATHS/BUILDPATH
+# or by placing assignments to these variables in the file      ./XSOPATHS
+#
+# Supplementary scala parameters are used to set paramaters used 
+# by components of the cso library. They are delivered to the scala
+# runtime in the environment variable XSOPARAMS (whose default value sets
+# the cso debugger port to 8000, and the process pool time to 2 seconds)
+#
+JARPATHS=${JARPATHS-./PUBLISH}
+BUILDPATH=${BUILDPATH-./BUILD}
+XSOPATHS=${XSOPATHS-./XSOPATHS}
+XSOPARAMS=${XSOPARAMS-"-Dio.threadcso.debugger.port=8000 -Dio.threadcso.pool.SECS=2"}
+#
+#
+#
+if [ -e $XSOPATHS ] 
+then
+   . $XSOPATHS
+fi
+JARS=""
+for JARPATH in $JARPATHS
+do
+  for JAR in `find $JARPATH/ -name "*.jar"`; do JARS=$JAR":"$JARS; done
+done
+echo $JARS
+eval exec scala $XSOPARAMS -cp .:$BUILDPATH:$JARS "$@"
+
+
+
+
+

@@ -1,0 +1,33 @@
+#
+# Use scalac to compile scala/cso program
+#
+# Usage: xsoc [scalac parameters]
+#
+# Default path where cso (and other) .jar file(s) are found is          ./PUBLISH
+# Default path into which class files are placed is                     ./BUILD
+# These can be overridden by setting the environment variables  JARPATHS/BUILDPATH
+# or by placing assignments to these variables in the file      ./XSOPATHS
+#
+#
+JARPATHS=${JARPATHS-./PUBLISH}
+BUILDPATH=${BUILDPATH-./BUILD}
+XSOPATHS=${XSOPATHS-./XSOPATHS}
+#
+#
+#
+if [ -e $XSOPATHS ] 
+then
+   . $XSOPATHS
+fi
+JARS=""
+for JARPATH in $JARPATHS
+do
+ for JAR in `find $JARPATH/ -name "*.jar"`; do JARS=$JAR":"$JARS; done
+done
+echo $JARS
+exec scalac -cp .:$BUILDPATH:$JARS -d $BUILDPATH "$@"
+
+
+
+
+
